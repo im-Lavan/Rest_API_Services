@@ -536,7 +536,7 @@
             <!-- VM SERVER SECTION -->
             <div class="section vm">
                 <h2>Cloud Deployment</h2>
-                <p class="subtitle">4.251.106.173:8080 - Azure VM production server</p>
+                <p class="subtitle">{Your VM IP}:8080 - Azure VM production server</p>
 
                 <div class="endpoint-group">
                     <h3>Distance Calculation</h3>
@@ -547,7 +547,7 @@
                             Get distance between two coordinates
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/direct?startLon=-0.1276&startLat=51.5074&endLon=-2.2426&endLat=53.4808
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/direct?startLon=-0.1276&startLat=51.5074&endLon=-2.2426&endLat=53.4808
                         </div>
                     </div>
 
@@ -557,7 +557,7 @@
                             Get distance for specific item
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items/i002/distance?userLat=51.5074&userLon=-0.1276
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items/i002/distance?userLat=51.5074&userLon=-0.1276
                         </div>
                     </div>
                 </div>
@@ -571,7 +571,7 @@
                             Get all items (raw, no distance)
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items
                         </div>
                     </div>
 
@@ -581,7 +581,7 @@
                             Get all items with distance calculation
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?userLat=51.5074&userLon=-0.1276
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?userLat=51.5074&userLon=-0.1276
                         </div>
                     </div>
                 </div>
@@ -595,7 +595,7 @@
                             Page 1 with distance calculation
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?page=1&userLat=51.5074&userLon=-0.1276
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?page=1&userLat=51.5074&userLon=-0.1276
                         </div>
                     </div>
 
@@ -605,7 +605,7 @@
                             Page 2 without distance calculation
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?page=2
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?page=2
                         </div>
                     </div>
                 </div>
@@ -619,7 +619,7 @@
                             Filter by category
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?category=Tools
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?category=Tools
                         </div>
                     </div>
 
@@ -629,7 +629,7 @@
                             Filter by city
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?city=Nottingham
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?city=Nottingham
                         </div>
                     </div>
 
@@ -639,7 +639,7 @@
                             Filter by condition
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?condition=Excellent
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?condition=Excellent
                         </div>
                     </div>
 
@@ -649,7 +649,7 @@
                             Multiple filters (category + condition)
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?category=Tools&condition=Good
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?category=Tools&condition=Good
                         </div>
                     </div>
 
@@ -659,7 +659,7 @@
                             Filter + pagination
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?city=London&page=1
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?city=London&page=1
                         </div>
                     </div>
 
@@ -669,7 +669,7 @@
                             Filter with distance calculation
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?condition=Excellent&userLat=51.5074&userLon=-0.1276
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?condition=Excellent&userLat=51.5074&userLon=-0.1276
                         </div>
                     </div>
 
@@ -679,7 +679,7 @@
                             All filters + pagination + distance
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?category=music&city=oxford&condition=excellent&page=1&userLat=53.3811&userLon=-1.4701
+                            http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?category=music&city=oxford&condition=excellent&page=1&userLat=53.3811&userLon=-1.4701
                         </div>
                     </div>
                 </div>
@@ -693,7 +693,7 @@
                             Request item with user ID
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            curl -X POST "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items/i001/request?user_id=Alice"
+                            curl -X POST "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items/i001/request?user_id=Alice"
                         </div>
                     </div>
 
@@ -703,7 +703,7 @@
                             Request item (default user)
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            curl -X POST "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items/i001/request"
+                            curl -X POST "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items/i001/request"
                         </div>
                     </div>
 
@@ -713,7 +713,7 @@
                             Cancel request by ID
                         </div>
                         <div class="endpoint-url" onclick="copyToClipboard(this)">
-                            curl -X PUT "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/requests/REQ-1768234228723-4362/cancel"
+                            curl -X PUT "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/requests/REQ-1768234228723-4362/cancel"
                         </div>
                     </div>
                 </div>

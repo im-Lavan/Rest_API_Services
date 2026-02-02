@@ -14,6 +14,8 @@
 - **Region**: France Central
 - **Public IP**: {Your VM IP}
 
+> **Note**: Throughout this document, replace `{Your VM IP}` with your actual Azure VM public IP address (e.g., `4.251.106.173`). You can find this in the Azure Portal → Your VM → Overview → Public IP address.
+
 ### Software Stack
 - **Server**: Apache Tomcat 9.0.58
 - **Runtime**: OpenJDK 17.0.17
@@ -205,6 +207,9 @@ http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items
 ```bash
 sudo tail -f /var/log/tomcat9/catalina.out
 ```
+
+**Update index.html with your VM IP:**
+Before deployment, update `RESTServices/web/index.html` to replace all `{Your VM IP}` placeholders with your actual VM IP address. This ensures the API documentation page displays the correct endpoints for your deployment.
 
 ---
 

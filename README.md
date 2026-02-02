@@ -23,9 +23,9 @@ http://localhost:8080/RESTServices/
 http://{Your VM IP}:8080/RESTServices/
 ```
 
-Replace `{Your VM IP}` with your Azure VM's public IP address.
+**Important**: Replace `{Your VM IP}` with your Azure VM's public IP address (e.g., `4.251.106.173`). You can find this in the Azure Portal under your VM's Overview page.
 
-Both URLs provide interactive API documentation with click-to-copy endpoints.
+Both URLs provide interactive API documentation with click-to-copy endpoints. Remember to also update the `{Your VM IP}` placeholder in `RESTServices/web/index.html` with your actual VM IP address.
 
 ---
 
