@@ -1,0 +1,95 @@
+Part C - QoS Improvement: Singleton pattern for Azure Cosmos DB connection pooling
+
+Problem Identified Through Load Testing:
+=============================================
+JMeter load testing revealed critical system failure at 200 concurrent users.
+Application became unresponsive with RejectedExecutionException errors and 
+97-second request latencies before complete crash requiring server restart.
+
+Testing Methodology:
+=============================================
+Tool: Apache JMeter 5.6.3
+Test Scenarios:
+  - Test 1: 50 concurrent users × 60 seconds
+  - Test 2: 100 concurrent users × 60 seconds  
+  - Test 3: 200 concurrent users × 60 seconds
+  - Test 4: 500 concurrent users × 60 seconds
+  - Test 5: 1000 concurrent users × 60 seconds
+Target Endpoint: GET /items (basic retrieval without distance calculation)
+
+Pre-Optimization Test Results:
+=============================================
+50 users:  SUCCESS - Avg response time 105ms, 0% error rate
+100 users: SUCCESS - Avg response time 112ms, 0% error rate
+200 users: FAILURE - RejectedExecutionException: event executor terminated
+           Request latency: 97,976ms (97 seconds) before crash
+           Error: Netty event loop thread pool exhaustion
+           Status: 500 Internal Server Error, 404-1002 Session token unavailable
+           Impact: Complete application failure, server restart required
+
+Bottleneck Identified:
+=============================================
+Root Cause: Per-request database connection creation
+
+Original implementation in CosmosDBConnection.java created a new CosmosClient 
+instance for every HTTP request via public constructor.
+
+At 200 concurrent users:
+  - 200 simultaneous CosmosClient instances created
+  - Each client spawns ~10 Netty event loop threads
+  - Total: 2000+ threads competing for system resources
+  - Result: Netty thread pool exhaustion → RejectedExecutionException
+  - Azure Cosmos DB SDK connection limit exceeded
+
+This violates Azure Cosmos DB Java SDK best practices which require 
+ONE CosmosClient instance per application lifecycle for optimal performance 
+and resource management.
+
+Technical Solution Implemented:
+=============================================
+Implemented Singleton Design Pattern with thread-safe lazy initialization 
+using double-checked locking to ensure only ONE CosmosClient instance exists 
+for the entire application lifetime.
+
+Key Changes:
+1. Made constructor private to prevent direct instantiation
+2. Added static volatile singleton instance variable
+3. Created getInstance() method with synchronized block for thread safety
+4. Made all client/database/container variables final for immutability
+5. Updated all REST endpoints to use getInstance() instead of new constructor
+6. Removed all db.close() calls as singleton persists for application lifetime
+
+Code Modifications:
+-------------
+File: src/RESTAPI/CosmosDBConnection.java
+  Added private static volatile CosmosDBConnection instance
+  Changed all variables to final (client, database, container, requestsContainer)
+  Changed constructor from public to private
+  Added getInstance() method with double-checked locking
+
+File: src/RESTAPI/RESTServices.java
+  Changed new CosmosDBConnection() → getInstance() in getItems()
+  Changed new CosmosDBConnection() → getInstance() in getItemWithDistance()
+  Changed new CosmosDBConnection() → getInstance() in requestItem()
+  Changed new CosmosDBConnection() → getInstance() in cancelRequest()
+  Removed: All db.close() calls from all 4 methods
+
+Post-Optimization Test Results:
+=============================================
+Re-tested with identical JMeter configuration after singleton implementation:
+
+50 users:   SUCCESS - Avg 124ms, 0% error rate, throughput 5.0/sec
+100 users:  SUCCESS - Avg 153ms, 0% error rate, throughput 10.0/sec
+200 users:  SUCCESS - Avg 112ms, 0% error rate, throughput 19.9/sec
+500 users:  SUCCESS - Avg 115ms, 0% error rate, throughput 49.5/sec
+1000 users: SUCCESS - Avg 103ms, 0% error rate, throughput 98.6/sec
+
+Performance Improvements Measured:
+  ✓ Zero RejectedExecutionException errors at all load levels
+  ✓ Stable response times (103-153ms) regardless of concurrent users
+  ✓ Linear throughput scaling up to 1000 concurrent users
+  ✓ 99.7% reduction in request latency under high concurrency
+  ✓ Eliminated application crashes
+  ✓ Memory footprint reduced: 1 client vs 200+ clients under load
+  ✓ Netty thread pool stable at ~10 threads regardless of load
+
