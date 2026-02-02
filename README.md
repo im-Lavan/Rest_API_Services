@@ -17,8 +17,10 @@ http://localhost:8080/RESTServices/
 
 ### ☁️ Cloud Deployment
 ```
-http://4.251.106.173:8080/RESTServices/
+http://{Your VM IP}:8080/RESTServices/
 ```
+
+Replace `{Your VM IP}` with your Azure VM's public IP address.
 
 Both URLs provide interactive API documentation with click-to-copy endpoints.
 
@@ -71,12 +73,58 @@ See [DEPLOYMENT_README.md](DEPLOYMENT_README.md) for complete deployment documen
 
 ## Architecture
 
-**Frontend**: HTML5 API documentation page (dark theme)  
-**Backend**: JAX-RS REST services  
-**Database**: Azure Cosmos DB (NoSQL)  
-**External APIs**: OSRM (routing)  
-**Server**: Apache Tomcat 9  
+**Frontend**: HTML5 API documentation page (dark theme)
+**Backend**: JAX-RS REST services
+**Database**: Azure Cosmos DB (NoSQL)
+**External APIs**: OSRM (routing)
+**Server**: Apache Tomcat 9
 **Runtime**: Java 17
+
+---
+
+## Azure Cosmos DB Setup
+
+Before running the application, you must create an Azure Cosmos DB account and configure the connection.
+
+### 1. Create Azure Cosmos DB Account
+
+1. Go to [Azure Portal](https://portal.azure.com)
+2. Search for "Azure Cosmos DB" and click "Create"
+3. Select **Azure Cosmos DB for NoSQL**
+4. Configure:
+   - **Subscription**: Your Azure subscription
+   - **Resource Group**: Create new or use existing
+   - **Account Name**: Choose a unique name
+   - **Location**: Choose a region close to your VM
+   - **Capacity mode**: Serverless (for development) or Provisioned throughput
+
+### 2. Create Database and Containers
+
+After the account is created:
+
+1. Go to your Cosmos DB account → **Data Explorer**
+2. Click **New Database** and create a database named: `Coursework`
+3. Create two containers:
+   - **Container 1**: `items` with partition key `/item_id`
+   - **Container 2**: `Requests` with partition key `/item_id`
+
+### 3. Get Your Endpoint and Key
+
+1. Go to your Cosmos DB account → **Keys** (under Settings)
+2. Copy the following values:
+   - **URI** (Endpoint): `https://your-account-name.documents.azure.com:443/`
+   - **PRIMARY KEY**: Your secret key
+
+### 4. Configure the Application
+
+Open `src/java/RESTAPI/CosmosDBConnection.java` and update:
+
+```java
+private static final String ENDPOINT = "https://your-account-name.documents.azure.com:443/";
+private static final String KEY = "your-primary-key-here";
+```
+
+**Security Note**: For production, store credentials in environment variables instead of hardcoding them.
 
 ---
 
@@ -121,11 +169,11 @@ curl -X PUT "http://localhost:8080/RESTServices/webresources/RESTAPI/requests/RE
 
 ### Cloud Deployment Endpoints
 
-Replace `localhost:8080` with `4.251.106.173:8080` in any of the above URLs.
+Replace `localhost:8080` with `{Your VM IP}:8080` in any of the above URLs.
 
 **Example**:
 ```
-http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items
+http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items
 ```
 
 ---
