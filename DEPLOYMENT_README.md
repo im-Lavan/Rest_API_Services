@@ -12,7 +12,7 @@
 - **VM**: AssesmentVM (Standard B2s - 2 vcpus, 4 GiB memory)
 - **OS**: Ubuntu 22.04 LTS (Minimal)
 - **Region**: France Central
-- **Public IP**: 4.251.106.173
+- **Public IP**: {Your VM IP}
 
 ### Software Stack
 - **Server**: Apache Tomcat 9.0.58
@@ -29,24 +29,24 @@
 
 ## Live API Access
 
-**Base URL**: `http://4.251.106.173:8080/RESTServices/webresources/RESTAPI`
+**Base URL**: `http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI`
 
-**API Documentation**: `http://4.251.106.173:8080/RESTServices/`
+**API Documentation**: `http://{Your VM IP}:8080/RESTServices/`
 
 ### Quick Test Endpoints
 
 ```bash
 # Get all items
-curl http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items
+curl http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items
 
 # Get items with distance
-curl "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items?userLat=51.5074&userLon=-0.1276"
+curl "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items?userLat=51.5074&userLon=-0.1276"
 
 # Request an item
-curl -X POST "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items/i001/request?user_id=Alice"
+curl -X POST "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items/i001/request?user_id=Alice"
 
 # Cancel request
-curl -X PUT "http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/requests/REQ-{id}/cancel"
+curl -X PUT "http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/requests/REQ-{id}/cancel"
 ```
 
 ---
@@ -72,11 +72,44 @@ Download and save the SSH private key file.
 
 ---
 
-### 2. Install Software
+### 2. Create Azure Cosmos DB
+
+**Azure Portal → Azure Cosmos DB → Create**
+
+1. Select **Azure Cosmos DB for NoSQL**
+2. Configure:
+   ```
+   Subscription: Azure for Students
+   Resource Group: [Same as VM or new]
+   Account Name: [unique-name]
+   Location: [Same region as VM for low latency]
+   Capacity mode: Serverless (recommended for development)
+   ```
+
+3. After creation, go to **Data Explorer** and create:
+   - **Database**: `Coursework`
+   - **Container 1**: `items` (Partition key: `/item_id`)
+   - **Container 2**: `Requests` (Partition key: `/item_id`)
+
+4. Go to **Keys** (under Settings) and copy:
+   - **URI**: Your endpoint URL
+   - **PRIMARY KEY**: Your secret key
+
+5. Update `src/java/RESTAPI/CosmosDBConnection.java`:
+   ```java
+   private static final String ENDPOINT = "https://your-account.documents.azure.com:443/";
+   private static final String KEY = "your-primary-key-here";
+   ```
+
+6. Rebuild the WAR file after updating credentials.
+
+---
+
+### 3. Install Software
 
 **Connect to VM:**
 ```bash
-ssh -i <path-to-key> azureuser@4.251.106.173
+ssh -i <path-to-key> azureuser@{Your VM IP}
 ```
 
 **Install Java 17 & Tomcat 9:**
@@ -89,7 +122,7 @@ sudo apt-get install nano
 
 ---
 
-### 3. Configure Tomcat
+### 4. Configure Tomcat
 
 **Set Java Home:**
 ```bash
@@ -111,7 +144,7 @@ sudo systemctl status tomcat9
 
 ---
 
-### 4. Configure Azure Firewall
+### 5. Configure Azure Firewall
 
 **Azure Portal → VM → Networking → Add inbound port rule**
 
@@ -131,19 +164,19 @@ sudo ufw allow from any to any port 8080 proto tcp
 
 ---
 
-### 5. Deploy Application
+### 6. Deploy Application
 
 **Option 1: Tomcat Manager (Recommended)**
 
 1. Build WAR file in NetBeans (Clean and Build)
-2. Go to: `http://4.251.106.173:8080/manager/html`
+2. Go to: `http://{Your VM IP}:8080/manager/html`
 3. Login with: tomcat / pass
 4. Scroll to "WAR file to deploy"
 5. Choose `RESTServices.war` and click Deploy
 
 **Option 2: WinSCP File Transfer**
 
-1. Connect via WinSCP to 4.251.106.173
+1. Connect via WinSCP to {Your VM IP}
 2. Protocol: SFTP, Port: 22
 3. Upload WAR to: `/var/lib/tomcat9/webapps/`
 4. Restart Tomcat: `sudo systemctl restart tomcat9`
@@ -151,21 +184,21 @@ sudo ufw allow from any to any port 8080 proto tcp
 **Option 3: SCP Command**
 
 ```bash
-scp -i <key> RESTServices.war azureuser@4.251.106.173:/var/lib/tomcat9/webapps/
+scp -i <key> RESTServices.war azureuser@{Your VM IP}:/var/lib/tomcat9/webapps/
 ```
 
 ---
 
-### 6. Verify Deployment
+### 7. Verify Deployment
 
 **Check deployment:**
 ```
-http://4.251.106.173:8080/RESTServices/
+http://{Your VM IP}:8080/RESTServices/
 ```
 
 **Test API endpoint:**
 ```
-http://4.251.106.173:8080/RESTServices/webresources/RESTAPI/items
+http://{Your VM IP}:8080/RESTServices/webresources/RESTAPI/items
 ```
 
 **Check Tomcat logs:**
@@ -216,9 +249,12 @@ sudo chown tomcat:tomcat /var/lib/tomcat9/webapps/RESTServices.war
 ```
 
 ### Issue: Database Connection Failure
-- Verify Cosmos DB endpoint and key in source code
+- Verify Cosmos DB endpoint and key are correctly set in `CosmosDBConnection.java`
+- Ensure the database `Coursework` and containers `items`, `Requests` exist
+- Check that partition keys are set to `/item_id` for both containers
 - Check network connectivity from VM to Azure Cosmos DB
-- Ensure Cosmos DB allows access from all networks or VM's IP
+- Ensure Cosmos DB allows access from all networks or add your VM's IP to the firewall
+- Rebuild and redeploy the WAR file after updating credentials
 
 ---
 
@@ -309,11 +345,11 @@ See `/Testing Evidence/Bottle Necks/` for detailed analysis.
 
 **Connect to VM:**
 ```bash
-ssh -i azureuser.pem azureuser@4.251.106.173
+ssh -i azureuser.pem azureuser@{Your VM IP}
 ```
 
 **File Transfer (WinSCP):**
-- Host: 4.251.106.173
+- Host: {Your VM IP}
 - Port: 22
 - Protocol: SFTP
 - Username: azureuser
@@ -325,7 +361,7 @@ ssh -i azureuser.pem azureuser@4.251.106.173
 
 | Component | Value |
 |-----------|-------|
-| Public IP | 4.251.106.173 |
+| Public IP | Your Azure VM's public IP address |
 | HTTP Port | 8080 |
 | SSH Port | 22 |
 | SSH User | azureuser |
