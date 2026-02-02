@@ -6,6 +6,9 @@ A RESTful web service enabling sustainable item rental through a sharing economy
 **Module**: COMP30231 Service-Centric and Cloud Computing  
 **University**: Nottingham Trent University
 
+<img width="906" height="476" alt="Screenshot 2026-02-02 095508" src="https://github.com/user-attachments/assets/a33b85f0-1bea-40f0-874d-c44a1a908116" />
+
+
 ---
 
 ## Quick Access
